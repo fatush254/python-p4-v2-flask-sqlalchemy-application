@@ -1,20 +1,20 @@
 # server/app.py
-#!/usr/bin/env python3
 
 from flask import Flask, make_response
 from flask_migrate import Migrate
 
 from models import db, Pet
 
-app = Flask(__name__)
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///app.db'
-app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+# add this view after index()
 
-migrate = Migrate(app, db)
+@app.router('/pets/<int:id>')
+def pet_by_id(id):
+    pet = Pet.query.filter(Pet.id == id).first()
+    response_body = f'<p>{pet.name} {pet.species}</p>'
 
-db.init_app(app)
+    response = make_response(response_body, 200)
 
-# add views here 
+    return response
 
 if __name__ == '__main__':
     app.run(port=5555, debug=True)
